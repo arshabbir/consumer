@@ -66,7 +66,7 @@ func (c *client) Create(st dto.Emp) *utils.ApiError {
 
 	log.Println("Executing the insert query")
 	if err := c.session.Query("INSERT INTO consumer.events(name, dept, empid, timestamp) values(?, ?, ?, ?);", st.Name, st.Dept, st.EmpID, st.TimeStamp).Consistency(gocql.Quorum).Exec(); err != nil {
-		log.Println("Insert query error")
+		log.Println("Insert query error", err)
 		return &utils.ApiError{Status: 0, Message: "Insert query error"}
 	}
 
