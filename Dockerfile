@@ -2,7 +2,7 @@ FROM golang
 
 ENV CLUSTERIP "cassandra"
 ENV PORT ":8081"
-ENV KAFKA_HOST "localhost:29092"
+ENV KAFKA_HOST "172.31.38.67:29092"
 ENV TOPIC "myTopic1"
 
 RUN mkdir /build

@@ -38,7 +38,7 @@ func NewDBClient() Client {
 	}
 
 	// create keyspaces
-	err = session.Query("CREATE KEYSPACE IF NOT EXISTS consumers WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor' : 1};").Exec()
+	err = session.Query("CREATE KEYSPACE IF NOT EXISTS consumersevents WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor' : 1};").Exec()
 	if err != nil {
 		log.Println(err)
 		return nil
@@ -46,7 +46,7 @@ func NewDBClient() Client {
 
 	// create table
 	//Name:XXXXX,Dept=OSS,EmplD:1234, Time=21-7-2021 21:00:10
-	err = session.Query("CREATE TABLE IF NOT EXISTS consumers.events (name text, dept text, empid text, timestamp text,PRIMARY KEY (empid));").Exec()
+	err = session.Query("CREATE TABLE IF NOT EXISTS consumersevents.events (name text, dept text, empid text, timestamp text,PRIMARY KEY (empid));").Exec()
 	if err != nil {
 		log.Println(err)
 		return nil
@@ -66,7 +66,7 @@ func (c *client) Create(st dto.Emp) *utils.ApiError {
 	//insertQuery := fmt.Sprintf("INSERT INTO studentdetails(id, name, class, marks) values(?, ?, ?, ?);")
 
 	log.Println("Executing the insert query")
-	if err := c.session.Query("INSERT INTO consumers.events(name, dept, empid, timestamp) values(?, ?, ?, ?);", st.Name, st.Dept, st.EmpID, st.TimeStamp).Consistency(gocql.Quorum).Exec(); err != nil {
+	if err := c.session.Query("INSERT INTO consumersevents.events(name, dept, empid, timestamp) values(?, ?, ?, ?);", st.Name, st.Dept, st.EmpID, st.TimeStamp).Consistency(gocql.Quorum).Exec(); err != nil {
 		log.Println("Insert query error", err)
 		return &utils.ApiError{Status: 0, Message: "Insert query error"}
 	}
@@ -80,7 +80,7 @@ func (c *client) Read(id string) ([]dto.Emp, *utils.ApiError) {
 
 	var name, dept, empid, timestamp string
 
-	iter := c.session.Query("SELECT name, dept, empid ,timestamp from consumers.events where empid=?", id).Consistency(gocql.Quorum).Iter()
+	iter := c.session.Query("SELECT name, dept, empid ,timestamp from consumersevents.events where empid=?", id).Consistency(gocql.Quorum).Iter()
 	var students = make([]dto.Emp, iter.NumRows())
 
 	log.Println("Number rows : ", iter.NumRows())
@@ -106,7 +106,7 @@ func (c *client) ReadAll() ([]dto.Emp, *utils.ApiError) {
 
 	var name, dept, empid, timestamp string
 
-	iter := c.session.Query("SELECT name, dept, empid ,timestamp from consumers.events ").Consistency(gocql.Quorum).Iter()
+	iter := c.session.Query("SELECT name, dept, empid ,timestamp from consumersevents.events ").Consistency(gocql.Quorum).Iter()
 	var students = make([]dto.Emp, iter.NumRows())
 
 	log.Println("Number rows : ", iter.NumRows())
