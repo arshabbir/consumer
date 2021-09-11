@@ -80,7 +80,7 @@ func (c *client) Read(id string) ([]dto.Emp, *utils.ApiError) {
 
 	var name, dept, empid, timestamp string
 
-	iter := c.session.Query("SELECT name, dept, empid ,timestamp from consumer.events where empid=?", id).Consistency(gocql.Quorum).Iter()
+	iter := c.session.Query("SELECT name, dept, empid ,timestamp from consumers.events where empid=?", id).Consistency(gocql.Quorum).Iter()
 	var students = make([]dto.Emp, iter.NumRows())
 
 	log.Println("Number rows : ", iter.NumRows())
@@ -106,7 +106,7 @@ func (c *client) ReadAll() ([]dto.Emp, *utils.ApiError) {
 
 	var name, dept, empid, timestamp string
 
-	iter := c.session.Query("SELECT name, dept, empid ,timestamp from consumer.events ").Consistency(gocql.Quorum).Iter()
+	iter := c.session.Query("SELECT name, dept, empid ,timestamp from consumers.events ").Consistency(gocql.Quorum).Iter()
 	var students = make([]dto.Emp, iter.NumRows())
 
 	log.Println("Number rows : ", iter.NumRows())
@@ -119,7 +119,7 @@ func (c *client) ReadAll() ([]dto.Emp, *utils.ApiError) {
 	}
 
 	if err := iter.Close(); err != nil {
-		log.Fatal("Error closing the iterator")
+		log.Println("Error closing the iterator")
 		return nil, nil
 	}
 

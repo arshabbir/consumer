@@ -6,11 +6,12 @@ import (
 	"os"
 
 	"github.com/arshabbir/consumer/utils"
+	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/arshabbir/consumer/domain/dao"
 
 	"github.com/arshabbir/consumer/domain/dto"
-	"github.com/gin-gonic/gin"
 )
 
 type empController struct {
@@ -99,7 +100,16 @@ func (sc *empController) Start() {
 	sc.c.POST("/create", sc.Create)
 
 	sc.c.GET("/read/:id", sc.Read)
+	sc.c.GET("/metrics", prometheusHandler())
 
 	sc.c.Run(port)
 
+}
+
+func prometheusHandler() gin.HandlerFunc {
+	h := promhttp.Handler()
+
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
+	}
 }
