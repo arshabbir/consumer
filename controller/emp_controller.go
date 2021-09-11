@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/arshabbir/consumer/utils"
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
@@ -97,6 +98,8 @@ func (sc *empController) Read(c *gin.Context) {
 func (sc *empController) Start() {
 
 	port := os.Getenv("PORT")
+
+	pprof.Register(sc.c)
 
 	log.Println("Port environment  : ", port)
 	sc.c.POST("/create", sc.Create)
