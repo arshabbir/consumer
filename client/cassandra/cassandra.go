@@ -37,7 +37,7 @@ func NewDBClient() Client {
 	}
 
 	// create keyspaces
-	err = session.Query("CREATE KEYSPACE IF NOT EXISTS consumer WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor' : 1};").Exec()
+	err = session.Query("CREATE KEYSPACE IF NOT EXISTS consumers WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor' : 1};").Exec()
 	if err != nil {
 		log.Println(err)
 		return nil
@@ -45,7 +45,7 @@ func NewDBClient() Client {
 
 	// create table
 	//Name:XXXXX,Dept=OSS,EmplD:1234, Time=21-7-2021 21:00:10
-	err = session.Query("CREATE TABLE IF NOT EXISTS consumer.events (name text, dept text, empid text, timestamp text,PRIMARY KEY (empid));").Exec()
+	err = session.Query("CREATE TABLE IF NOT EXISTS consumers.events (name text, dept text, empid text, timessamp text,PRIMARY KEY (empid));").Exec()
 	if err != nil {
 		log.Println(err)
 		return nil
@@ -65,7 +65,7 @@ func (c *client) Create(st dto.Emp) *utils.ApiError {
 	//insertQuery := fmt.Sprintf("INSERT INTO studentdetails(id, name, class, marks) values(?, ?, ?, ?);")
 
 	log.Println("Executing the insert query")
-	if err := c.session.Query("INSERT INTO consumer.events(name, dept, empid, timestamp) values(?, ?, ?, ?);", st.Name, st.Dept, st.EmpID, st.TimeStamp).Consistency(gocql.Quorum).Exec(); err != nil {
+	if err := c.session.Query("INSERT INTO consumers.events(name, dept, empid, timestamp) values(?, ?, ?, ?);", st.Name, st.Dept, st.EmpID, st.TimeStamp).Consistency(gocql.Quorum).Exec(); err != nil {
 		log.Println("Insert query error", err)
 		return &utils.ApiError{Status: 0, Message: "Insert query error"}
 	}
