@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/arshabbir/consumer/utils"
 	"github.com/gin-gonic/gin"
@@ -68,6 +69,7 @@ func (sc *empController) Create(c *gin.Context) {
 func (sc *empController) Read(c *gin.Context) {
 
 	id := c.Param("id")
+	id = strings.TrimPrefix(id, "/")
 
 	var emp []dto.Emp
 	var err *utils.ApiError
@@ -99,8 +101,8 @@ func (sc *empController) Start() {
 	log.Println("Port environment  : ", port)
 	sc.c.POST("/create", sc.Create)
 
-	sc.c.GET("/read/:id", sc.Read)
 	sc.c.GET("/metrics", prometheusHandler())
+	sc.c.GET("/read/*id", sc.Read)
 
 	sc.c.Run(port)
 
