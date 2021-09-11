@@ -16,6 +16,7 @@ type client struct {
 type Client interface {
 	Create(dto.Emp) *utils.ApiError
 	Read(string) ([]dto.Emp, *utils.ApiError)
+	ReadAll() ([]dto.Emp, *utils.ApiError)
 }
 
 func NewDBClient() Client {
@@ -80,6 +81,32 @@ func (c *client) Read(id string) ([]dto.Emp, *utils.ApiError) {
 	var name, dept, empid, timestamp string
 
 	iter := c.session.Query("SELECT name, dept, empid ,timestamp from consumer.events where empid=?", id).Consistency(gocql.Quorum).Iter()
+	var students = make([]dto.Emp, iter.NumRows())
+
+	log.Println("Number rows : ", iter.NumRows())
+
+	for i := 0; iter.Scan(&name, &dept, &empid, &timestamp); {
+		//students = append(students, dto.Student{Name: name, Marks: marks, Id: idd, Class: class})
+		students[i] = dto.Emp{Name: name, EmpID: empid, Dept: dept, TimeStamp: timestamp}
+		i++
+
+	}
+
+	if err := iter.Close(); err != nil {
+		log.Fatal("Error closing the iterator")
+		return nil, nil
+	}
+
+	return students, nil
+}
+
+func (c *client) ReadAll() ([]dto.Emp, *utils.ApiError) {
+
+	//Q
+
+	var name, dept, empid, timestamp string
+
+	iter := c.session.Query("SELECT name, dept, empid ,timestamp from consumer.events ").Consistency(gocql.Quorum).Iter()
 	var students = make([]dto.Emp, iter.NumRows())
 
 	log.Println("Number rows : ", iter.NumRows())

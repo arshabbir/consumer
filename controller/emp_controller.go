@@ -67,7 +67,16 @@ func (sc *empController) Create(c *gin.Context) {
 func (sc *empController) Read(c *gin.Context) {
 
 	id := c.Param("id")
-	emp, err := sc.dao.Read(id)
+
+	var emp []dto.Emp
+	var err *utils.ApiError
+
+	if id == "" {
+		emp, err = sc.dao.ReadAll()
+
+	} else {
+		emp, err = sc.dao.Read(id)
+	}
 	if err != nil {
 
 		log.Println("Error Reading data")
