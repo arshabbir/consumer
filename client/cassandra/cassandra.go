@@ -15,7 +15,7 @@ type client struct {
 }
 type Client interface {
 	Create(dto.Emp) *utils.ApiError
-	Read(int) ([]dto.Emp, *utils.ApiError)
+	Read(string) ([]dto.Emp, *utils.ApiError)
 }
 
 func NewDBClient() Client {
@@ -45,7 +45,7 @@ func NewDBClient() Client {
 
 	// create table
 	//Name:XXXXX,Dept=OSS,EmplD:1234, Time=21-7-2021 21:00:10
-	err = session.Query("CREATE TABLE IF NOT EXISTS consumer.events (name text, dept text, empid text, time text,PRIMARY KEY (name, empid));").Exec()
+	err = session.Query("CREATE TABLE IF NOT EXISTS consumer.events (name text, dept text, empid text, timestamp text,PRIMARY KEY (empid));").Exec()
 	if err != nil {
 		log.Println(err)
 		return nil
@@ -65,7 +65,7 @@ func (c *client) Create(st dto.Emp) *utils.ApiError {
 	//insertQuery := fmt.Sprintf("INSERT INTO studentdetails(id, name, class, marks) values(?, ?, ?, ?);")
 
 	log.Println("Executing the insert query")
-	if err := c.session.Query("INSERT INTO studentdetails(Name, Dept, EmpId, TimeStamp) values(?, ?, ?, ?);", st.Name, st.Dept, st.EmpID, st.TimeStamp).Consistency(gocql.Quorum).Exec(); err != nil {
+	if err := c.session.Query("INSERT INTO consumer.events(name, dept, empid, timestamp) values(?, ?, ?, ?);", st.Name, st.Dept, st.EmpID, st.TimeStamp).Consistency(gocql.Quorum).Exec(); err != nil {
 		log.Println("Insert query error")
 		return &utils.ApiError{Status: 0, Message: "Insert query error"}
 	}
@@ -73,13 +73,13 @@ func (c *client) Create(st dto.Emp) *utils.ApiError {
 	return nil
 }
 
-func (c *client) Read(id int) ([]dto.Emp, *utils.ApiError) {
+func (c *client) Read(id string) ([]dto.Emp, *utils.ApiError) {
 
 	//Q
 
 	var name, dept, empid, timestamp string
 
-	iter := c.session.Query("SELECT id, name, class ,marks from studentdetails where id=?", id).Consistency(gocql.Quorum).Iter()
+	iter := c.session.Query("SELECT name, dept, empid ,timestamp from consumer.events where empid=?", id).Consistency(gocql.Quorum).Iter()
 	var students = make([]dto.Emp, iter.NumRows())
 
 	log.Println("Number rows : ", iter.NumRows())

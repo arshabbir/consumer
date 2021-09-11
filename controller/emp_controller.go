@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 
 	"github.com/arshabbir/consumer/utils"
 
@@ -14,19 +13,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type studentController struct {
+type empController struct {
 	c   *gin.Engine
 	dao dao.EmpDAO
 }
 
-type StudentController interface {
+type EmpController interface {
 	Create(c *gin.Context)
 	Read(c *gin.Context)
 
 	Start()
 }
 
-func NewStudentController() StudentController {
+func NewEmpController() EmpController {
 
 	dao := dao.NewDAO()
 
@@ -37,10 +36,10 @@ func NewStudentController() StudentController {
 
 	log.Println("DAO creation successful .")
 
-	return &studentController{c: gin.Default(), dao: dao}
+	return &empController{c: gin.Default(), dao: dao}
 }
 
-func (sc *studentController) Create(c *gin.Context) {
+func (sc *empController) Create(c *gin.Context) {
 
 	//Extract data from body
 
@@ -65,17 +64,10 @@ func (sc *studentController) Create(c *gin.Context) {
 	return
 }
 
-func (sc *studentController) Read(c *gin.Context) {
+func (sc *empController) Read(c *gin.Context) {
 
-	id, rerr := strconv.Atoi(c.Param("id"))
-
-	if rerr != nil {
-		log.Println("Error parsing the request")
-		c.JSON(http.StatusOK, &utils.ApiError{Status: http.StatusBadRequest, Message: "Error parsing the request"})
-		return
-	}
-
-	student, err := sc.dao.Read(id)
+	id := c.Param("id")
+	emp, err := sc.dao.Read(id)
 	if err != nil {
 
 		log.Println("Error Reading data")
@@ -85,12 +77,12 @@ func (sc *studentController) Read(c *gin.Context) {
 
 	//Marshal the result into json and send it
 
-	c.JSON(http.StatusOK, &student)
+	c.JSON(http.StatusOK, &emp)
 
 	return
 }
 
-func (sc *studentController) Start() {
+func (sc *empController) Start() {
 
 	port := os.Getenv("PORT")
 

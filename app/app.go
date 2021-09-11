@@ -10,7 +10,7 @@ import (
 func StartApplication() {
 	//
 
-	app := controller.NewStudentController()
+	app := controller.NewEmpController()
 
 	if app == nil {
 		log.Println("Error Strting the application")
