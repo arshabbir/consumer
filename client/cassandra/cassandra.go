@@ -46,7 +46,7 @@ func NewDBClient() Client {
 
 	// create table
 	//Name:XXXXX,Dept=OSS,EmplD:1234, Time=21-7-2021 21:00:10
-	err = session.Query("CREATE TABLE IF NOT EXISTS consumers.events (name text, dept text, empid text, timessamp text,PRIMARY KEY (empid));").Exec()
+	err = session.Query("CREATE TABLE IF NOT EXISTS consumers.events (name text, dept text, empid text, timestamp text,PRIMARY KEY (empid));").Exec()
 	if err != nil {
 		log.Println(err)
 		return nil
