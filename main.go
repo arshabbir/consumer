@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/arshabbir/cassandraclient/app"
+	"github.com/arshabbir/consumer/app"
 )
 
 func main() {

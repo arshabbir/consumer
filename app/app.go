@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/arshabbir/cassandraclient/controller"
+	"github.com/arshabbir/consumer/controller"
 )
 
 func StartApplication() {

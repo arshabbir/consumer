@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/arshabbir/cassandraclient/domain/dto"
-	"github.com/arshabbir/cassandraclient/utils"
+	"github.com/arshabbir/consumer/domain/dto"
+	"github.com/arshabbir/consumer/utils"
 	"github.com/gocql/gocql"
 )
 

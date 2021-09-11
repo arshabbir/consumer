@@ -6,11 +6,11 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/arshabbir/cassandraclient/utils"
+	"github.com/arshabbir/consumer/utils"
 
-	"github.com/arshabbir/cassandraclient/domain/dao"
+	"github.com/arshabbir/consumer/domain/dao"
 
-	"github.com/arshabbir/cassandraclient/domain/dto"
+	"github.com/arshabbir/consumer/domain/dto"
 	"github.com/gin-gonic/gin"
 )
 

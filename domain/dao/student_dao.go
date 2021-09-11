@@ -3,9 +3,9 @@ package dao
 import (
 	"log"
 
-	"github.com/arshabbir/cassandraclient/client/cassandra"
-	"github.com/arshabbir/cassandraclient/domain/dto"
-	"github.com/arshabbir/cassandraclient/utils"
+	"github.com/arshabbir/consumer/client/cassandra"
+	"github.com/arshabbir/consumer/domain/dto"
+	"github.com/arshabbir/consumer/utils"
 )
 
 type studentDao struct {
