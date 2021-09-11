@@ -16,14 +16,13 @@ import (
 
 type studentController struct {
 	c   *gin.Engine
-	dao dao.StudentDAO
+	dao dao.EmpDAO
 }
 
 type StudentController interface {
 	Create(c *gin.Context)
 	Read(c *gin.Context)
-	Update(c *gin.Context)
-	Delete(c *gin.Context)
+
 	Start()
 }
 
@@ -45,7 +44,7 @@ func (sc *studentController) Create(c *gin.Context) {
 
 	//Extract data from body
 
-	var st dto.Student
+	var st dto.Emp
 
 	if err := c.ShouldBindJSON(&st); err != nil {
 		log.Println("Error parsing the request")
@@ -91,62 +90,13 @@ func (sc *studentController) Read(c *gin.Context) {
 	return
 }
 
-func (sc *studentController) Delete(c *gin.Context) {
-
-	id, rerr := strconv.Atoi(c.Param("id"))
-
-	if rerr != nil {
-		log.Println("Error parsing the request")
-		c.JSON(http.StatusOK, &utils.ApiError{Status: http.StatusBadRequest, Message: "Error parsing the request"})
-		return
-	}
-
-	err := sc.dao.Delete(id)
-	if err != nil {
-
-		log.Println("Error Delete data")
-		c.JSON(http.StatusOK, &utils.ApiError{Status: http.StatusInternalServerError, Message: "Error Deleting data"})
-		return
-	}
-
-	c.JSON(http.StatusOK, &utils.ApiError{Status: http.StatusOK, Message: "Deletion Successful "})
-
-	return
-}
-
-func (sc *studentController) Update(c *gin.Context) {
-
-	//Extract data from body
-
-	var st dto.Student
-
-	if err := c.ShouldBindJSON(&st); err != nil {
-		log.Println("Error parsing the request")
-		c.JSON(http.StatusOK, &utils.ApiError{Status: http.StatusBadRequest, Message: "Error parsing the request"})
-		return
-	}
-
-	if err := sc.dao.Update(st.Id, st); err != nil {
-
-		log.Println("Error Updating into dao")
-		c.JSON(http.StatusOK, &utils.ApiError{Status: http.StatusInternalServerError, Message: "Error Updating into dao"})
-		return
-	}
-
-	log.Println("Insertion  successful .")
-	c.JSON(http.StatusOK, &utils.ApiError{Status: http.StatusOK, Message: " Updating successful"})
-
-	return
-}
-
 func (sc *studentController) Start() {
 
 	port := os.Getenv("PORT")
 
 	log.Println("Port environment  : ", port)
 	sc.c.POST("/create", sc.Create)
-	sc.c.GET("/delete/:id", sc.Delete)
-	sc.c.PUT("/update", sc.Update)
+
 	sc.c.GET("/read/:id", sc.Read)
 
 	sc.c.Run(port)

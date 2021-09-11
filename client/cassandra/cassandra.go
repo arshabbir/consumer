@@ -14,10 +14,8 @@ type client struct {
 	session *gocql.Session
 }
 type Client interface {
-	Create(dto.Student) *utils.ApiError
-	Read(int) ([]dto.Student, *utils.ApiError)
-	Update(int, dto.Student) *utils.ApiError
-	Delete(int) *utils.ApiError
+	Create(dto.Emp) *utils.ApiError
+	Read(int) ([]dto.Emp, *utils.ApiError)
 }
 
 func NewDBClient() Client {
@@ -28,29 +26,46 @@ func NewDBClient() Client {
 	log.Println("ClusterIP environment  : ", clusterIP)
 
 	cluster := gocql.NewCluster(clusterIP)
-	cluster.Keyspace = "student"
+	//cluster.Keyspace = "student"
 	cluster.Consistency = gocql.Quorum
 
 	session, err := cluster.CreateSession()
 
 	if err != nil {
-		log.Println("Cassandra Session Creation Error..", err.Error())
+		log.Println("Error creating session")
 		return nil
 	}
+
+	// create keyspaces
+	err = session.Query("CREATE KEYSPACE IF NOT EXISTS consumer WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor' : 1};").Exec()
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	// create table
+	//Name:XXXXX,Dept=OSS,EmplD:1234, Time=21-7-2021 21:00:10
+	err = session.Query("CREATE TABLE IF NOT EXISTS consumer.events (name text, dept text, empid text, time text,PRIMARY KEY (name, empid));").Exec()
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	log.Println("Table Creation Successful")
 
 	//defer session.Close()
 	return &client{cluster: cluster, session: session}
 
 }
 
-func (c *client) Create(st dto.Student) *utils.ApiError {
+func (c *client) Create(st dto.Emp) *utils.ApiError {
 
 	//Form the insert query & execute it
 
 	//insertQuery := fmt.Sprintf("INSERT INTO studentdetails(id, name, class, marks) values(?, ?, ?, ?);")
 
 	log.Println("Executing the insert query")
-	if err := c.session.Query("INSERT INTO studentdetails(id, name, class, marks) values(?, ?, ?, ?);", st.Id, st.Name, st.Class, st.Marks).Consistency(gocql.Quorum).Exec(); err != nil {
+	if err := c.session.Query("INSERT INTO studentdetails(Name, Dept, EmpId, TimeStamp) values(?, ?, ?, ?);", st.Name, st.Dept, st.EmpID, st.TimeStamp).Consistency(gocql.Quorum).Exec(); err != nil {
 		log.Println("Insert query error")
 		return &utils.ApiError{Status: 0, Message: "Insert query error"}
 	}
@@ -58,21 +73,20 @@ func (c *client) Create(st dto.Student) *utils.ApiError {
 	return nil
 }
 
-func (c *client) Read(id int) ([]dto.Student, *utils.ApiError) {
+func (c *client) Read(id int) ([]dto.Emp, *utils.ApiError) {
 
 	//Q
 
-	var name, class string
-	var idd, marks int
+	var name, dept, empid, timestamp string
 
 	iter := c.session.Query("SELECT id, name, class ,marks from studentdetails where id=?", id).Consistency(gocql.Quorum).Iter()
-	var students = make([]dto.Student, iter.NumRows())
+	var students = make([]dto.Emp, iter.NumRows())
 
 	log.Println("Number rows : ", iter.NumRows())
 
-	for i := 0; iter.Scan(&idd, &name, &class, &marks); {
+	for i := 0; iter.Scan(&name, &dept, &empid, &timestamp); {
 		//students = append(students, dto.Student{Name: name, Marks: marks, Id: idd, Class: class})
-		students[i] = dto.Student{Name: name, Marks: marks, Id: idd, Class: class}
+		students[i] = dto.Emp{Name: name, EmpID: empid, Dept: dept, TimeStamp: timestamp}
 		i++
 
 	}
@@ -83,27 +97,4 @@ func (c *client) Read(id int) ([]dto.Student, *utils.ApiError) {
 	}
 
 	return students, nil
-}
-
-func (c *client) Update(id int, st dto.Student) *utils.ApiError {
-
-	//updateQuery := fmt.Sprintf("Update studentdetails set  name=?, class=?, marks=? where id=?;")
-
-	if err := c.session.Query("Update studentdetails set name=?, class=?, marks=? where id=? ;", st.Name, st.Class, st.Marks, id).Exec(); err != nil {
-		log.Println("Update query error", err)
-		return &utils.ApiError{Status: 0, Message: "Update query error"}
-	}
-
-	return nil
-}
-
-func (c *client) Delete(id int) *utils.ApiError {
-
-	//deleteQuery := fmt.Sprintf("Delete studentdetails  where id=?;")
-
-	if err := c.session.Query("Delete from studentdetails  where  id=? ;", id).Exec(); err != nil {
-		log.Println("Delete query error", err)
-		return &utils.ApiError{Status: 0, Message: "Delete query error"}
-	}
-	return nil
 }

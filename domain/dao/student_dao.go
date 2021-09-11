@@ -8,18 +8,16 @@ import (
 	"github.com/arshabbir/consumer/utils"
 )
 
-type studentDao struct {
+type empDao struct {
 	dbclient cassandra.Client
 }
 
-type StudentDAO interface {
-	Create(dto.Student) *utils.ApiError
-	Read(int) ([]dto.Student, *utils.ApiError)
-	Update(int, dto.Student) *utils.ApiError
-	Delete(int) *utils.ApiError
+type EmpDAO interface {
+	Create(dto.Emp) *utils.ApiError
+	Read(int) ([]dto.Emp, *utils.ApiError)
 }
 
-func NewDAO() StudentDAO {
+func NewDAO() EmpDAO {
 	dbclient := cassandra.NewDBClient()
 
 	if dbclient == nil {
@@ -27,26 +25,15 @@ func NewDAO() StudentDAO {
 		return nil
 	}
 
-	return &studentDao{dbclient: dbclient}
+	return &empDao{dbclient: dbclient}
 }
 
-func (c *studentDao) Create(st dto.Student) *utils.ApiError {
+func (c *empDao) Create(st dto.Emp) *utils.ApiError {
 
 	return c.dbclient.Create(st)
 }
 
-func (c *studentDao) Read(id int) ([]dto.Student, *utils.ApiError) {
+func (c *empDao) Read(id int) ([]dto.Emp, *utils.ApiError) {
 
 	return c.dbclient.Read(id)
-}
-
-func (c *studentDao) Update(id int, st dto.Student) *utils.ApiError {
-
-	return c.dbclient.Update(id, st)
-}
-
-func (c *studentDao) Delete(id int) *utils.ApiError {
-
-	return c.dbclient.Delete(id)
-
 }
