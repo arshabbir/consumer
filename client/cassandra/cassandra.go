@@ -38,7 +38,7 @@ func NewDBClient() Client {
 		session, err = cluster.CreateSession()
 
 		if err != nil {
-			log.Println("Error creating session")
+			log.Println("Error creating session", err)
 
 			time.Sleep(time.Second * 2)
 		} else {
