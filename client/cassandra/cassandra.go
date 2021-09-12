@@ -3,6 +3,7 @@ package cassandra
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/arshabbir/consumer/domain/dto"
 	"github.com/arshabbir/consumer/utils"
@@ -22,6 +23,8 @@ type Client interface {
 func NewDBClient() Client {
 	//Get the Environment variable "CASSANDRACLUSTER"
 
+	var session *gocql.Session
+	var err error
 	clusterIP := os.Getenv("CLUSTERIP")
 
 	log.Println("ClusterIP environment  : ", clusterIP)
@@ -30,11 +33,18 @@ func NewDBClient() Client {
 	//cluster.Keyspace = "student"
 	cluster.Consistency = gocql.Quorum
 
-	session, err := cluster.CreateSession()
+	for {
 
-	if err != nil {
-		log.Println("Error creating session")
-		return nil
+		session, err = cluster.CreateSession()
+
+		if err != nil {
+			log.Println("Error creating session")
+
+			time.Sleep(time.Second * 2)
+		} else {
+			break
+		}
+
 	}
 
 	// create keyspaces
