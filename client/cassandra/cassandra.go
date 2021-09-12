@@ -32,6 +32,7 @@ func NewDBClient() Client {
 	cluster := gocql.NewCluster(clusterIP)
 	//cluster.Keyspace = "student"
 	cluster.Consistency = gocql.Quorum
+	cluster.CQLVersion = "3"
 
 	for {
 
