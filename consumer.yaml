@@ -15,9 +15,9 @@ spec:
     app: consumer
   spec:
    containers:
-     - image: consumer
+     - image: arshabbir/consumer:latest
        name : consumer
-       imagePullPolicy: IfNotPresent
+       imagePullPolicy: Always
        env:
         - name: CLUSTERIP 
           value : "cassandra"
