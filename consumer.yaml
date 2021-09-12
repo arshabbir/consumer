@@ -18,6 +18,15 @@ spec:
      - image: consumer
        name : consumer
        imagePullPolicy: IfNotPresent
+       env:
+        - name: CLUSTERIP 
+          value : "cassandra"
+        - name: PORT
+          value : ":8081"
+        - name: KAFKA_HOST
+          value : "172.31.38.67:29092"
+        - name: TOPIC
+          value :  "myTopic1"
 ---
 apiVersion: v1
 kind: Service
@@ -32,3 +41,6 @@ spec:
     - port: 8081
       targetPort: 8081
       nodePort: 30007
+
+
+
