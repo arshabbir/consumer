@@ -24,7 +24,7 @@ spec:
         - name: PORT
           value : ":8081"
         - name: KAFKA_HOST
-          value : "kakfa-service"
+          value : "kafka1"
         - name: TOPIC
           value :  "myTopic1"
 ---

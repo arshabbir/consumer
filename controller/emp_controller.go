@@ -113,7 +113,7 @@ func (sc *empController) Start() {
 
 	go sc.Consumer(wait)
 
-	sc.c.GET("/metrics", prometheusHandler())
+	sc.c.GET("/v1/metrics", prometheusHandler())
 	sc.c.GET("/v1/read/*id", sc.Read)
 
 	sc.c.Run(port)
@@ -123,12 +123,6 @@ func (sc *empController) Start() {
 }
 
 func (sc *empController) Consumer(wait chan int) {
-
-	/*c, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers": "localhost:29092",
-		"auto.offset.reset": "earliest",
-		"group.id":          "testgrouid",
-	})*/
 
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": os.Getenv("KAFKA_HOST"),
@@ -143,7 +137,7 @@ func (sc *empController) Consumer(wait chan int) {
 	defer func() {
 		wait <- 0
 	}()
-	//c.SubscribeTopics([]string{"myTopic1"}, nil)
+
 	c.SubscribeTopics([]string{os.Getenv("TOPIC")}, nil)
 	for {
 		msg, err := c.ReadMessage(-1)
