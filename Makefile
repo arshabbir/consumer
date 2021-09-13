@@ -2,7 +2,7 @@ BUILDPATH=$(CURDIR)
 GO=$(shell which go)
 GOBUILD=$(GO) build
 
-EXECNAME=testexe
+EXECNAME=consumer
 
 
 test :
